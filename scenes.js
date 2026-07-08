@@ -89,13 +89,57 @@
 
   function lighthouse(x, baseY, s, t, beam) {
     ctx.save(); ctx.translate(x, baseY);
-    ctx.strokeStyle = gold(0.55); ctx.fillStyle = fillGold(0.22); ctx.lineWidth = 1.4;
-    ctx.beginPath(); ctx.moveTo(-6 * s, 0); ctx.lineTo(-4 * s, -34 * s); ctx.lineTo(4 * s, -34 * s); ctx.lineTo(6 * s, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,235,180,' + (0.55 + 0.4 * Math.sin(t * 3)) + ')';
-    ctx.fillRect(-3.4 * s, -41 * s, 6.8 * s, 6 * s);
+    // rocky base
+    ctx.fillStyle = 'rgba(10,20,32,.9)'; ctx.strokeStyle = gold(0.25); ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(-14 * s, 2 * s);
+    ctx.quadraticCurveTo(-10 * s, -3 * s, -4 * s, -1.5 * s);
+    ctx.quadraticCurveTo(0, -4 * s, 5 * s, -1.5 * s);
+    ctx.quadraticCurveTo(11 * s, -3 * s, 14 * s, 2 * s);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // tapered masonry tower with side shading
+    var grd = ctx.createLinearGradient(-7 * s, 0, 7 * s, 0);
+    grd.addColorStop(0, 'rgba(199,161,78,.30)'); grd.addColorStop(0.5, 'rgba(199,161,78,.12)'); grd.addColorStop(1, 'rgba(199,161,78,.26)');
+    ctx.fillStyle = grd; ctx.strokeStyle = gold(0.6); ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.moveTo(-6.5 * s, 0); ctx.lineTo(-4.2 * s, -34 * s); ctx.lineTo(4.2 * s, -34 * s); ctx.lineTo(6.5 * s, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // horizontal bands
+    ctx.strokeStyle = gold(0.35); ctx.lineWidth = 1;
+    for (var i = 1; i <= 3; i++) {
+      var w = (6.5 - 2.3 * i / 4) * s, yy = -34 * s * i / 4;
+      ctx.beginPath(); ctx.moveTo(-w, yy); ctx.lineTo(w, yy); ctx.stroke();
+    }
+    // arched door + porthole window
+    ctx.fillStyle = 'rgba(8,16,26,.85)';
+    ctx.beginPath(); ctx.moveTo(-1.8 * s, 0); ctx.lineTo(-1.8 * s, -4.6 * s);
+    ctx.quadraticCurveTo(0, -6.6 * s, 1.8 * s, -4.6 * s); ctx.lineTo(1.8 * s, 0); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = gold(0.4); ctx.beginPath(); ctx.arc(0, -19 * s, 1.5 * s, 0, 6.29); ctx.stroke();
+    // gallery deck with railing
+    ctx.fillStyle = fillGold(0.5);
+    ctx.fillRect(-6 * s, -35.6 * s, 12 * s, 1.6 * s);
+    ctx.strokeStyle = gold(0.5); ctx.lineWidth = 0.9;
+    for (var r = -5; r <= 5; r += 2) {
+      ctx.beginPath(); ctx.moveTo(r * s, -35.6 * s); ctx.lineTo(r * s, -38.2 * s); ctx.stroke();
+    }
+    ctx.beginPath(); ctx.moveTo(-5.4 * s, -38.2 * s); ctx.lineTo(5.4 * s, -38.2 * s); ctx.stroke();
+    // lantern room: warm glow + glass mullions
+    var pulse = 0.55 + 0.35 * Math.sin(t * 3);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    var halo = ctx.createRadialGradient(0, -40 * s, 0, 0, -40 * s, 16 * s);
+    halo.addColorStop(0, 'rgba(255,235,180,' + (0.22 * pulse) + ')'); halo.addColorStop(1, 'rgba(255,235,180,0)');
+    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(0, -40 * s, 16 * s, 0, 6.29); ctx.fill();
+    ctx.restore();
+    ctx.fillStyle = 'rgba(255,235,180,' + pulse + ')';
+    ctx.fillRect(-3.4 * s, -43 * s, 6.8 * s, 5.5 * s);
+    ctx.strokeStyle = 'rgba(12,20,30,.75)'; ctx.lineWidth = 0.9;
+    ctx.beginPath(); ctx.moveTo(-1.1 * s, -43 * s); ctx.lineTo(-1.1 * s, -37.5 * s);
+    ctx.moveTo(1.1 * s, -43 * s); ctx.lineTo(1.1 * s, -37.5 * s); ctx.stroke();
+    // conical roof + finial
+    ctx.fillStyle = fillGold(0.55); ctx.strokeStyle = gold(0.6); ctx.lineWidth = 1.1;
+    ctx.beginPath(); ctx.moveTo(-4.4 * s, -43 * s); ctx.lineTo(4.4 * s, -43 * s); ctx.lineTo(0, -48.5 * s); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = gold(0.8); ctx.beginPath(); ctx.arc(0, -49.3 * s, 0.9 * s, 0, 6.29); ctx.fill();
     if (beam) {
       var a = -Math.PI / 2 + Math.sin(t * 0.4) * 0.55, len = Math.max(W, H) * 0.9, sp = 0.11;
-      ctx.save(); ctx.translate(0, -38 * s); ctx.rotate(a); ctx.globalCompositeOperation = 'lighter';
+      ctx.save(); ctx.translate(0, -40 * s); ctx.rotate(a); ctx.globalCompositeOperation = 'lighter';
       var bg = ctx.createLinearGradient(0, 0, len, 0);
       bg.addColorStop(0, 'rgba(255,236,180,.20)'); bg.addColorStop(0.5, 'rgba(230,204,140,.06)'); bg.addColorStop(1, 'rgba(230,204,140,0)');
       ctx.fillStyle = bg; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(sp) * len, Math.sin(sp) * len); ctx.lineTo(Math.cos(-sp) * len, Math.sin(-sp) * len); ctx.closePath(); ctx.fill();
@@ -113,14 +157,73 @@
     lighthouse(W * 0.80, HZ - 6, 0.8, t, true);
   }
 
+  // square-sail sail with billowing edges hanging between ytop and ybot around mast x
+  function sailPanel(xm, ytop, ybot, halfw, bil) {
+    var mid = (ytop + ybot) / 2;
+    ctx.beginPath();
+    ctx.moveTo(xm - halfw, ytop);
+    ctx.quadraticCurveTo(xm, ytop + 2, xm + halfw, ytop);
+    ctx.quadraticCurveTo(xm + halfw + 4 * bil, mid, xm + halfw - 1, ybot);
+    ctx.quadraticCurveTo(xm, ybot + 4 * bil, xm - halfw + 1, ybot);
+    ctx.quadraticCurveTo(xm - halfw - 4 * bil, mid, xm - halfw, ytop);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+
   function ship(cx, baseY, s, t) {
     var bob = Math.sin(t * 0.9) * 4, tilt = Math.sin(t * 0.9) * 0.05;
     ctx.save(); ctx.translate(cx, baseY + bob); ctx.rotate(tilt);
-    ctx.strokeStyle = gold(0.6); ctx.fillStyle = fillGold(0.18); ctx.lineWidth = 1.6;
-    ctx.beginPath(); ctx.moveTo(-32 * s, 0); ctx.quadraticCurveTo(0, 15 * s, 32 * s, 0); ctx.lineTo(26 * s, -4 * s); ctx.lineTo(-26 * s, -4 * s); ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, -4 * s); ctx.lineTo(0, -46 * s); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(3 * s, -44 * s); ctx.lineTo(3 * s, -9 * s); ctx.lineTo(26 * s, -9 * s); ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(-3 * s, -38 * s); ctx.lineTo(-3 * s, -9 * s); ctx.lineTo(-22 * s, -9 * s); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // hull with sheer curve, raised stern and bow
+    var hullGrad = ctx.createLinearGradient(0, -6 * s, 0, 14 * s);
+    hullGrad.addColorStop(0, 'rgba(199,161,78,.30)'); hullGrad.addColorStop(1, 'rgba(199,161,78,.10)');
+    ctx.fillStyle = hullGrad; ctx.strokeStyle = gold(0.65); ctx.lineWidth = 1.4;
+    ctx.beginPath();
+    ctx.moveTo(-34 * s, -8 * s);
+    ctx.quadraticCurveTo(-31 * s, 6 * s, -18 * s, 10 * s);
+    ctx.quadraticCurveTo(0, 14 * s, 18 * s, 10 * s);
+    ctx.quadraticCurveTo(30 * s, 7 * s, 36 * s, -9 * s);
+    ctx.lineTo(30 * s, -6 * s);
+    ctx.quadraticCurveTo(0, -1 * s, -28 * s, -5 * s);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // planking lines
+    ctx.strokeStyle = gold(0.22); ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(-28 * s, 1 * s); ctx.quadraticCurveTo(0, 5 * s, 30 * s, 0); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-24 * s, 5 * s); ctx.quadraticCurveTo(0, 9 * s, 26 * s, 4 * s); ctx.stroke();
+    // bowsprit
+    ctx.strokeStyle = gold(0.6); ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.moveTo(34 * s, -8 * s); ctx.lineTo(47 * s, -16 * s); ctx.stroke();
+    // masts
+    ctx.beginPath(); ctx.moveTo(11 * s, -4 * s); ctx.lineTo(11 * s, -47 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-11 * s, -4 * s); ctx.lineTo(-11 * s, -55 * s); ctx.stroke();
+    // crow's nest on main mast
+    ctx.fillStyle = fillGold(0.4);
+    ctx.fillRect(-13 * s, -44 * s, 4 * s, 1.6 * s);
+    // sails: two per mast, breathing softly in the wind
+    var bil = (1 + 0.05 * Math.sin(t * 1.3)) * s;
+    ctx.fillStyle = fillGold(0.16); ctx.strokeStyle = gold(0.55); ctx.lineWidth = 1.1;
+    sailPanel(-11 * s, -53 * s, -40 * s, 12 * s, bil);
+    sailPanel(-11 * s, -38 * s, -22 * s, 14.5 * s, bil);
+    sailPanel(11 * s, -45 * s, -34 * s, 10 * s, bil);
+    sailPanel(11 * s, -32 * s, -18 * s, 12.5 * s, bil);
+    // jib sail between bowsprit and fore mast
+    ctx.beginPath();
+    ctx.moveTo(46 * s, -15.5 * s);
+    ctx.quadraticCurveTo(30 * s, -34 * s, 12.5 * s, -44 * s);
+    ctx.lineTo(12.5 * s, -20 * s);
+    ctx.quadraticCurveTo(30 * s, -21 * s, 46 * s, -15.5 * s);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // rigging
+    ctx.strokeStyle = gold(0.28); ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(-11 * s, -55 * s); ctx.lineTo(-30 * s, -7 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(-11 * s, -55 * s); ctx.lineTo(11 * s, -47 * s); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(11 * s, -47 * s); ctx.lineTo(34 * s, -8 * s); ctx.stroke();
+    // pennant flag streaming from the main mast
+    var fw = Math.sin(t * 3) * 2 * s;
+    ctx.fillStyle = fillGold(0.55);
+    ctx.beginPath();
+    ctx.moveTo(-11 * s, -55 * s);
+    ctx.quadraticCurveTo(-4 * s, -56 * s + fw * 0.4, 1 * s, -54.5 * s + fw);
+    ctx.quadraticCurveTo(-4 * s, -53.5 * s + fw * 0.4, -11 * s, -52.5 * s);
+    ctx.closePath(); ctx.fill();
     ctx.restore();
   }
 
@@ -132,43 +235,126 @@
     }
   }
 
-  // whale silhouette centered at (x,y)
+  // whale centered at (x,y), head facing +x before dir flip
   function whale(x, y, s, dir, t, ph) {
     ctx.save(); ctx.translate(x, y); ctx.scale(dir * s, s);
-    var flick = Math.sin(t * 1.4 + ph) * 0.12;
-    ctx.fillStyle = fillGold(0.16); ctx.strokeStyle = gold(0.45); ctx.lineWidth = 1.4 / s;
+    var flick = Math.sin(t * 1.4 + ph) * 0.18;
+    var bodyGrad = ctx.createLinearGradient(0, -20, 0, 20);
+    bodyGrad.addColorStop(0, 'rgba(199,161,78,.22)'); bodyGrad.addColorStop(1, 'rgba(199,161,78,.08)');
+    ctx.fillStyle = bodyGrad; ctx.strokeStyle = gold(0.5); ctx.lineWidth = 1.4 / s;
+    // body: rounded forehead, arched back, tapering tail stock
     ctx.beginPath();
-    ctx.moveTo(-60, 0);
-    ctx.quadraticCurveTo(-20, -26, 40, -14);
-    ctx.quadraticCurveTo(66, -10, 74, 0);
-    ctx.quadraticCurveTo(66, 10, 40, 16);
-    ctx.quadraticCurveTo(-10, 24, -50, 12);
-    ctx.quadraticCurveTo(-58, 10, -60, 6);
+    ctx.moveTo(74, 2);
+    ctx.quadraticCurveTo(70, -12, 48, -16);
+    ctx.quadraticCurveTo(20, -20, -8, -15);
+    ctx.quadraticCurveTo(-30, -11, -52, -4);
+    ctx.quadraticCurveTo(-60, -2, -64, 0);
+    ctx.quadraticCurveTo(-58, 4, -46, 7);
+    ctx.quadraticCurveTo(-20, 16, 14, 18);
+    ctx.quadraticCurveTo(48, 17, 66, 9);
+    ctx.quadraticCurveTo(73, 6, 74, 2);
     ctx.closePath(); ctx.fill(); ctx.stroke();
-    // tail
-    ctx.save(); ctx.translate(-60, 3); ctx.rotate(flick);
-    ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(-20, -16, -30, -20); ctx.quadraticCurveTo(-18, -4, -22, 2); ctx.quadraticCurveTo(-14, 8, -30, 20); ctx.quadraticCurveTo(-18, 14, 0, 4); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // dorsal fin
+    ctx.fillStyle = fillGold(0.2);
+    ctx.beginPath(); ctx.moveTo(-2, -16); ctx.quadraticCurveTo(2, -24, 10, -22); ctx.quadraticCurveTo(4, -18, 2, -15); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // pectoral fin, gently rowing
+    ctx.save(); ctx.translate(30, 10); ctx.rotate(0.5 + Math.sin(t + ph) * 0.08);
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(10, 14, 4, 24); ctx.quadraticCurveTo(-4, 16, -3, 2); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.restore();
-    // eye
-    ctx.fillStyle = gold(0.6); ctx.beginPath(); ctx.arc(46, -2, 1.6 / 1, 0, 6.29); ctx.fill();
+    // two-lobed tail flukes with flick
+    ctx.save(); ctx.translate(-64, 0); ctx.rotate(flick);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(-10, -6, -16, -18);
+    ctx.quadraticCurveTo(-17, -21, -22, -22);
+    ctx.quadraticCurveTo(-14, -10, -12, -2);
+    ctx.quadraticCurveTo(-14, 6, -22, 20);
+    ctx.quadraticCurveTo(-16, 19, -14, 16);
+    ctx.quadraticCurveTo(-9, 7, 0, 4);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.restore();
+    // ventral pleats along the jaw
+    ctx.strokeStyle = gold(0.22); ctx.lineWidth = 1 / s;
+    for (var i = 0; i < 4; i++) {
+      ctx.beginPath(); ctx.moveTo(58 - i * 3, 10 + i * 1.6); ctx.quadraticCurveTo(34, 14 + i * 1.4, 16, 15 + i); ctx.stroke();
+    }
+    // mouth line + eye
+    ctx.strokeStyle = gold(0.4); ctx.lineWidth = 1.2 / s;
+    ctx.beginPath(); ctx.moveTo(70, 4); ctx.quadraticCurveTo(52, 9, 36, 9); ctx.stroke();
+    ctx.fillStyle = gold(0.75); ctx.beginPath(); ctx.arc(56, -1, 1.7, 0, 6.29); ctx.fill();
+    // blowhole bubbles drifting up
+    ctx.strokeStyle = gold(0.3); ctx.lineWidth = 1 / s;
+    for (var b = 0; b < 3; b++) {
+      var by = -24 - ((t * 6 + ph * 10 + b * 8) % 22);
+      ctx.beginPath(); ctx.arc(46 + Math.sin(t + b) * 2, by, 1.6 + b * 0.5, 0, 6.29); ctx.stroke();
+    }
     ctx.restore();
   }
 
-  // merfolk: upper body + flicking tail, facing dir
+  // merfolk: flowing hair, arched torso, scaled tail with two-lobed fin
   function merfolk(x, y, s, dir, t, ph) {
     ctx.save(); ctx.translate(x, y); ctx.scale(dir * s, s);
-    ctx.fillStyle = fillGold(0.18); ctx.strokeStyle = gold(0.5); ctx.lineWidth = 1.3 / s;
+    var sw = Math.sin(t * 1.6 + ph) * 0.16;
+    // hair streaming behind the head
+    ctx.strokeStyle = gold(0.45); ctx.lineWidth = 1.1 / s;
+    for (var h = 0; h < 4; h++) {
+      ctx.beginPath();
+      ctx.moveTo(-2, -40);
+      ctx.quadraticCurveTo(-10 - h * 3, -34 + Math.sin(t * 1.2 + h) * 2, -12 - h * 3.5, -20 + h * 3 + Math.sin(t + h) * 2);
+      ctx.stroke();
+    }
     // head
+    ctx.fillStyle = fillGold(0.2); ctx.strokeStyle = gold(0.55); ctx.lineWidth = 1.2 / s;
     ctx.beginPath(); ctx.arc(0, -34, 6, 0, 6.29); ctx.fill(); ctx.stroke();
-    // torso
-    ctx.beginPath(); ctx.moveTo(-5, -28); ctx.quadraticCurveTo(-8, -14, -4, -4); ctx.lineTo(4, -4); ctx.quadraticCurveTo(8, -16, 5, -28); ctx.closePath(); ctx.fill(); ctx.stroke();
-    // arm reaching forward
-    ctx.beginPath(); ctx.moveTo(3, -24); ctx.quadraticCurveTo(18, -20, 26, -24); ctx.stroke();
-    // tail
-    var sw = Math.sin(t * 1.6 + ph) * 0.2;
-    ctx.save(); ctx.translate(0, -4); ctx.rotate(sw);
-    ctx.beginPath(); ctx.moveTo(-4, 0); ctx.quadraticCurveTo(-8, 24, -2, 40); ctx.quadraticCurveTo(-16, 46, -14, 54); ctx.quadraticCurveTo(0, 48, 2, 42); ctx.quadraticCurveTo(4, 48, 16, 54); ctx.quadraticCurveTo(12, 44, 4, 40); ctx.quadraticCurveTo(8, 22, 4, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // torso in a gentle S-curve
+    ctx.beginPath();
+    ctx.moveTo(-4.5, -29);
+    ctx.quadraticCurveTo(-8, -18, -5, -8);
+    ctx.quadraticCurveTo(-3, -4, -3.5, -2);
+    ctx.lineTo(4, -2);
+    ctx.quadraticCurveTo(7, -12, 4.8, -22);
+    ctx.quadraticCurveTo(4, -27, 3.5, -29);
+    ctx.quadraticCurveTo(0, -31, -4.5, -29);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    // arm reaching forward, with fingers
+    ctx.beginPath(); ctx.moveTo(3, -24); ctx.quadraticCurveTo(14, -22, 22, -26); ctx.quadraticCurveTo(25, -27.5, 27, -27); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(27, -27); ctx.lineTo(29.5, -28.2); ctx.moveTo(27, -27); ctx.lineTo(29.5, -26.2); ctx.stroke();
+    // tail with scale rows and hip fin
+    ctx.save(); ctx.translate(0, -2); ctx.rotate(sw);
+    ctx.beginPath();
+    ctx.moveTo(-3.5, 0);
+    ctx.quadraticCurveTo(-8, 16, -3, 30);
+    ctx.quadraticCurveTo(-1.5, 36, 0, 40);
+    ctx.quadraticCurveTo(1.5, 36, 3, 30);
+    ctx.quadraticCurveTo(8, 14, 4, 0);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = gold(0.3); ctx.lineWidth = 0.9 / s;
+    for (var r = 0; r < 4; r++) {
+      ctx.beginPath(); ctx.arc(0, 4 + r * 7, 5.5 - r * 0.7, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    }
+    ctx.strokeStyle = gold(0.5); ctx.fillStyle = fillGold(0.14);
+    ctx.beginPath(); ctx.moveTo(4, 8); ctx.quadraticCurveTo(10, 10, 12, 16); ctx.quadraticCurveTo(7, 15, 4, 12); ctx.closePath(); ctx.fill(); ctx.stroke();
+    // caudal fin with extra sway and fin rays
+    ctx.save(); ctx.translate(0, 40); ctx.rotate(sw * 1.6);
+    ctx.fillStyle = fillGold(0.16);
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.quadraticCurveTo(-9, 6, -13, 16);
+    ctx.quadraticCurveTo(-6, 13, -2, 12);
+    ctx.quadraticCurveTo(0, 14, 2, 12);
+    ctx.quadraticCurveTo(6, 13, 13, 16);
+    ctx.quadraticCurveTo(9, 6, 0, 0);
+    ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = gold(0.3);
+    ctx.beginPath(); ctx.moveTo(0, 2); ctx.lineTo(-7, 12); ctx.moveTo(0, 2); ctx.lineTo(0, 12); ctx.moveTo(0, 2); ctx.lineTo(7, 12); ctx.stroke();
     ctx.restore();
+    ctx.restore();
+    // rising bubbles
+    ctx.strokeStyle = gold(0.28); ctx.lineWidth = 1 / s;
+    for (var b = 0; b < 3; b++) {
+      var by = -44 - ((t * 5 + ph * 8 + b * 7) % 18);
+      ctx.beginPath(); ctx.arc(8 + Math.sin(t * 1.3 + b) * 2, by, 1.2 + b * 0.4, 0, 6.29); ctx.stroke();
+    }
     ctx.restore();
   }
 
