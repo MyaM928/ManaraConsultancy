@@ -6,7 +6,7 @@
    to a more detailed illustration. Purely additive — no app logic touched. */
 (function () {
   var CSS_ID = 'manara-overlay-css';
-  var CSS_HREF = 'assets/css/manara-overlay.css?v=20';
+  var CSS_HREF = 'assets/css/manara-overlay.css?v=22';
 
   function injectCss() {
     if (document.getElementById(CSS_ID)) return;
@@ -143,6 +143,10 @@
     if (btn && !btn.__mnrWaveBound) {
       btn.__mnrWaveBound = true;
       btn.addEventListener('click', function () {
+        // a tap on the keeper summons his wisdom back if it was dismissed
+        window.__mnrCaptainClosed = false;
+        var w = btn.parentElement;
+        if (w) w.classList.remove('is-dismissed');
         clearTimeout(svg.__mnrTimer);
         setState('is-wave');
         i = 2;   // resume at the walk that follows a wave
@@ -388,10 +392,62 @@
     }, true);
   }
 
+  /* ---------------------------------------------------------------------
+     The captain's quote bubble: the bundle renders it beige (its cream token)
+     with a navy line, which fights the dark page. We reskin it to dark glass
+     and give it a close control the visitor can always reach. The bundle owns
+     the markup and re-renders it, so this is idempotent (class-presence checks)
+     and re-runs every tick. Dismissal is a window flag re-applied each tick, so
+     it survives a re-render; tapping the keeper clears it and wisdom returns. */
+  function styleCaptainBubble() {
+    var btn = document.querySelector(CAPTAIN_BTN);
+    var wrap = btn && btn.parentElement;
+    if (!wrap) return;
+    wrap.classList.add('mnr-cap-wrap');
+
+    var span = wrap.querySelector('span.sc-interp');
+    var bubble = span && span.closest('div');
+    if (!bubble || bubble === wrap) return;
+    bubble.classList.add('mnr-cap-bubble');
+
+    var name = bubble.querySelector('div');           // the "Captain Marlow" label
+    if (name) name.classList.add('mnr-cap-name');
+
+    if (!bubble.querySelector('.mnr-cap-close')) {
+      var x = document.createElement('button');
+      x.type = 'button';
+      x.className = 'mnr-cap-close';
+      x.setAttribute('aria-label', 'Dismiss');
+      x.textContent = '×';
+      bubble.appendChild(x);
+    }
+
+    if (window.__mnrCaptainClosed) wrap.classList.add('is-dismissed');
+    else wrap.classList.remove('is-dismissed');
+  }
+
+  /* One delegated, capturing listener: pressing × hides the bubble for the
+     session. Capture + stopPropagation so nothing else acts on the click. */
+  function armCaptainClose() {
+    if (window.__mnrCapCloseBound) return;
+    window.__mnrCapCloseBound = true;
+    document.addEventListener('click', function (e) {
+      var x = e.target && e.target.closest ? e.target.closest('.mnr-cap-close') : null;
+      if (!x) return;
+      e.preventDefault();
+      e.stopPropagation();
+      window.__mnrCaptainClosed = true;
+      var wrap = x.closest('.mnr-cap-wrap');
+      if (!wrap) { var b = x.closest('.mnr-cap-bubble'); wrap = b && b.parentElement; }
+      if (wrap) wrap.classList.add('is-dismissed');
+    }, true);
+  }
+
   function tick() {
     injectCss();
     upgradePirate();
     captainSpeaksWisdom();
+    styleCaptainBubble();
     upgradeHrmIcon();
     tagHrCard();
     injectAboutNav();
@@ -435,6 +491,7 @@
   function arm() {
     tick();
     armConsultGuard();
+    armCaptainClose();
     // characterData matters: React swaps the captain's line by rewriting a text
     // node, which is not a childList mutation and would otherwise go unseen.
     // Observe `document` so a documentElement swap can't detach us either.

@@ -248,9 +248,49 @@
     });
   }
 
+  /* ---------- let the visitor close it, always ----------
+     The app already closes the panel through its own toggleChat (the header ×).
+     We only make that easier and more expected: Escape closes, and so does a
+     click on the empty page outside the panel. Both simply press the app's own
+     Close button, so React's chatOpen stays the single source of truth — we
+     never fight its state. Bound once on the document; the panel is hidden with
+     display:none (not unmounted), so "open" means it exists and is displayed. */
+  function panelIfOpen() {
+    var p = document.querySelector('.chat-panel');
+    if (!p) return null;
+    return getComputedStyle(p).display === 'none' ? null : p;
+  }
+  function closePanel() {
+    var p = panelIfOpen();
+    if (!p) return false;
+    var x = p.querySelector('button[aria-label="Close"]');
+    if (x) { x.click(); return true; }
+    return false;
+  }
+  function armCloseGestures() {
+    if (window.__mnrCloseGestures) return;
+    window.__mnrCloseGestures = true;
+
+    // Escape, from anywhere
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' || e.keyCode === 27) closePanel();
+    });
+
+    // click / tap outside the panel (and not on the launcher that opens it)
+    document.addEventListener('pointerdown', function (e) {
+      var p = panelIfOpen();
+      if (!p) return;
+      var t = e.target;
+      if (p.contains(t)) return;                                   // inside the panel
+      if (t.closest && t.closest('button[aria-label="Ask Manara"]')) return; // the launcher
+      closePanel();
+    });
+  }
+
   function tick() {
     upgradeLauncher();
     upgradePanel();
+    armCloseGestures();
   }
 
   var raf = null;

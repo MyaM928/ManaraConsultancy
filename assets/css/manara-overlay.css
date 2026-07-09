@@ -347,6 +347,53 @@ button.scpf.mnr-launch:hover .b-sweep{ animation-duration: 2.4s; }
 }
 .mnr-agent .mnr-head{ position: relative; z-index: 3; }
 
+/* Captain Marlow's quote bubble. The bundle renders it beige (its cream token)
+   with a navy line, which fights the dark page; we reskin it to dark glass and
+   add a dismiss control. Inline styles on the node, hence !important. Tap the
+   keeper to bring the wisdom back. */
+.mnr-cap-bubble{
+  position: relative;
+  background: linear-gradient(158deg, rgba(18,32,50,.97), rgba(9,17,28,.98)) !important;
+  color: #F4EEE1 !important;
+  border: 1px solid rgba(199,161,78,.5) !important;
+  box-shadow: 0 16px 40px -14px rgba(0,0,0,.7), inset 0 1px 0 rgba(230,204,140,.14) !important;
+  -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px);
+  padding-right: 30px !important;
+}
+.mnr-cap-bubble span.sc-interp{ color: #F4EEE1 !important; }
+.mnr-cap-name{ color: #E6CC8C !important; }
+.mnr-cap-close{
+  position: absolute; top: 5px; right: 6px;
+  width: 20px; height: 20px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: transparent; border: none; cursor: pointer;
+  color: rgba(230,204,140,.72); font-size: 17px; line-height: 1;
+  border-radius: 50%; transition: background .15s ease, color .15s ease, transform .15s ease;
+}
+.mnr-cap-close:hover, .mnr-cap-close:focus-visible{
+  background: rgba(230,204,140,.18); color: #F4EEE1; transform: rotate(90deg); outline: none;
+}
+.mnr-cap-wrap.is-dismissed .mnr-cap-bubble{ display: none !important; }
+
+/* the close control: a clear, comfortable tap target the visitor can always
+   reach. The app owns the click (aria-label Close -> toggleChat); we only make
+   it obvious and finger-sized (44px), with a gentle hover so it reads as a
+   button rather than a stray glyph. */
+.mnr-agent .mnr-head button[aria-label="Close"]{
+  margin-left: auto; align-self: flex-start;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; min-width: 40px; padding: 0;
+  border-radius: 50%; font-size: 24px; line-height: 1;
+  color: #E6CC8C;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+.mnr-agent .mnr-head button[aria-label="Close"]:hover,
+.mnr-agent .mnr-head button[aria-label="Close"]:focus-visible{
+  background: rgba(230,204,140,.16);
+  color: #F4EEE1; transform: rotate(90deg);
+  outline: none;
+}
+
 /* live "on watch" pip */
 @keyframes mbPip{ 0%,100%{ box-shadow: 0 0 0 0 rgba(143,227,176,.55); } 70%{ box-shadow: 0 0 0 5px rgba(143,227,176,0); } }
 .mnr-status{
