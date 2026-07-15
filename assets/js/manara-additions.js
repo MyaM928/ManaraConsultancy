@@ -97,17 +97,32 @@
     }
     if (!src) return;
     var list = src.parentElement;
-    if (!list || list.querySelector('.mnr-voice')) return;   // already added
-    var v = src.cloneNode(true);
-    v.classList.add('mnr-voice');
-    v.querySelectorAll('[data-tk]').forEach(function (e) { e.removeAttribute('data-tk'); });
-    var p = v.querySelector('p');
-    if (p) {
-      p.textContent = '“Manara built us an AI assistant that answers enquiries day and night in Arabic and English — 90% handled instantly, and our team’s workload dropped 40%.”';
-      var attr = p.nextElementSibling;
-      if (attr) attr.textContent = 'Omar H., Community Manager · Real estate, Lebanon';
+    if (!list) return;
+    var v = list.querySelector('.mnr-voice');
+    if (!v) {
+      v = src.cloneNode(true);
+      v.classList.add('mnr-voice');
+      v.querySelectorAll('[data-tk]').forEach(function (e) { e.removeAttribute('data-tk'); });
+      var p = v.querySelector('p');
+      if (p) {
+        p.textContent = '“Manara built us an AI assistant that answers enquiries day and night in Arabic and English — 90% handled instantly, and our team’s workload dropped 40%.”';
+        var attr = p.nextElementSibling;
+        if (attr) attr.textContent = 'Omar H., Community Manager · Real estate, Lebanon';
+      }
+      list.appendChild(v);
     }
-    list.appendChild(v);
+    // CRITICAL: this card is injected AFTER the scroll-reveal observer AND its 900ms
+    // fallback have already run, so it never receives the 'in' class and stays frozen at
+    // opacity:0 / translateY(30px) — an invisible card that reserved a whole empty row,
+    // showing the lighthouse background through it (the "big gap" under Voices). Force it
+    // permanently visible and drop data-reveal so nothing can reset it. Re-applied each
+    // tick, so a React re-render can't undo it.
+    [v].concat([].slice.call(v.querySelectorAll('[data-reveal]'))).forEach(function (e) {
+      e.removeAttribute('data-reveal');
+      e.classList.add('in');
+      e.style.setProperty('opacity', '1', 'important');
+      e.style.setProperty('transform', 'none', 'important');
+    });
   }
 
   // Publications block for the homepage footer (the bundle). target="_blank" + no
@@ -150,12 +165,24 @@
     }
   }
 
+  // On phones, the full-screen (min-height:100vh) content sections leave huge empty
+  // gaps (the lighthouse background showing through). Shrink them to content height on
+  // narrow screens. Desktop keeps the intended full-screen look.
+  function tightenSections() {
+    if (window.innerWidth >= 760) return;   // phones/tablets only
+    document.querySelectorAll('section, [data-dc-tpl]').forEach(function (s) {
+      var mh = s.style.minHeight || '';
+      if (/100vh|100dvh/i.test(mh)) s.style.setProperty('min-height', 'auto', 'important');
+    });
+  }
+
   function apply() {
     injectSolutionsCard();
     injectVoice();
     styleCardButtons();
     injectPublications();
     replaceCareersForm();
+    tightenSections();
     removeCardPrices();
     // 1) HR trigger -> the real HR page (repoint the href; the click guard below blocks the modal)
     document.querySelectorAll('a[href="#hr-show"], [data-tk="hrc_b"]').forEach(function (el) {
