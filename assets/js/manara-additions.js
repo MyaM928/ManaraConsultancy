@@ -129,11 +129,33 @@
     f.insertBefore(d.firstChild, f.firstChild);
   }
 
+  // The homepage careers section shows the full apply form (with CV upload) — that
+  // belongs only on the dedicated Careers page. Hide the embedded form and drop in a
+  // button that leads to careers.html, where applicants actually apply.
+  function replaceCareersForm() {
+    var forms = document.querySelectorAll('form');
+    var cf = null;
+    for (var i = 0; i < forms.length; i++) { if (forms[i].querySelector('input[type=file]')) { cf = forms[i]; break; } }
+    if (!cf) return;
+    cf.style.setProperty('display', 'none', 'important');
+    var host = cf.parentNode;
+    if (host && !host.querySelector('.mnr-careers-btn')) {
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'text-align:center;padding:6px 0 4px';
+      wrap.innerHTML = '<a class="mnr-careers-btn" href="careers.html" ' +
+        'style="display:inline-flex;align-items:center;gap:8px;font-family:\'Archivo\',sans-serif;' +
+        'font-weight:600;font-size:15px;padding:15px 34px;border-radius:999px;background:#C7A14E;' +
+        'color:#0C1A2A;text-decoration:none">Apply to join the team →</a>';
+      host.insertBefore(wrap, cf);
+    }
+  }
+
   function apply() {
     injectSolutionsCard();
     injectVoice();
     styleCardButtons();
     injectPublications();
+    replaceCareersForm();
     removeCardPrices();
     // 1) HR trigger -> the real HR page (repoint the href; the click guard below blocks the modal)
     document.querySelectorAll('a[href="#hr-show"], [data-tk="hrc_b"]').forEach(function (el) {
