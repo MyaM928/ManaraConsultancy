@@ -288,10 +288,41 @@
     });
   }
 
+  /* ---------- make links clickable ----------
+     The app renders each message as plain text ({{ m.text }}), so a URL Marsa
+     includes shows as text, not a link. We post-process the rendered bubbles and
+     wrap any URL / wa.me / +961 number in a real anchor. Idempotent (a per-node
+     flag), leaf text nodes only, and re-applied by the same tick after re-renders. */
+  function linkifyChat() {
+    var panel = document.querySelector('.chat-panel');
+    if (!panel) return;
+    var scope = panel.querySelector('.mnr-msgs') || panel;   // message bubbles only
+    var test = /(https?:\/\/|wa\.me\/|\+9617)/;
+    var re = /(https?:\/\/[^\s]+[^\s.,;:!?)])|(wa\.me\/[0-9]+)|(\+9617[0-9]{7})/g;
+    var nodes = scope.querySelectorAll('*');
+    for (var i = 0; i < nodes.length; i++) {
+      var b = nodes[i];
+      // Leaf text nodes only. The app renders text inside <span class="sc-interp">;
+      // once we linkify, the node gains an <a> child (children.length > 0) and is
+      // skipped next pass. If a re-render resets it to plain text, we re-linkify —
+      // so no persistent flag is needed and links can't get stuck off.
+      if (b.children.length || b.tagName === 'A') continue;
+      var txt = b.textContent;
+      if (!txt || !test.test(txt)) continue;
+      var esc = txt.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      b.innerHTML = esc.replace(re, function (u) {
+        var href = /^https?:/.test(u) ? u : (/^wa\.me/.test(u) ? 'https://' + u : 'tel:' + u.replace(/\s+/g, ''));
+        return '<a href="' + href + '" target="_blank" rel="noopener" ' +
+          'style="color:#E6CC8C;text-decoration:underline;word-break:break-word">' + u + '</a>';
+      });
+    }
+  }
+
   function tick() {
     upgradeLauncher();
     upgradePanel();
     armCloseGestures();
+    linkifyChat();
   }
 
   var raf = null;
@@ -303,12 +334,18 @@
   function arm() {
     tick();
     // observe `document`: the runtime swaps <html> out and would detach an
-    // observer bound to documentElement
-    mo.observe(document, { childList: true, subtree: true });
+    // observer bound to documentElement. characterData is included because the
+    // template fills message text as a text-node update (not a childList change),
+    // and linkifyChat must re-run once that URL text actually lands.
+    mo.observe(document, { childList: true, subtree: true, characterData: true });
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arm);
   else arm();
   window.addEventListener('load', tick);
   [600, 1800, 3500].forEach(function (ms) { setTimeout(tick, ms); });
+  // The observer's tick is rAF-gated, which some contexts throttle — so linkify
+  // (which must run each time a new message's URL text lands) also runs on a plain
+  // interval. It's cheap: it early-returns when the chat panel isn't present.
+  setInterval(linkifyChat, 700);
 })();
