@@ -586,3 +586,91 @@ a.scpf:hover, button.scpf:hover{
 @media (prefers-reduced-motion: reduce){
   *{ animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+
+/* ---- Explore in 3D: a gold sheen that sweeps across the pill, plus a slow
+   breathing glow, so the entry point into the 3D experience catches the eye
+   without shouting. Lives here (external sheet) because <style> tags injected
+   into <head> get wiped by the page's helmet on re-render. ---- */
+.mnr-shine3d{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  animation:mnrGlow3d 3s ease-in-out infinite;
+}
+.mnr-shine3d::after{
+  content:"";
+  position:absolute;
+  top:-20%;
+  left:-140%;
+  width:55%;
+  height:140%;
+  background:linear-gradient(115deg,rgba(255,241,199,0) 0%,rgba(255,241,199,.55) 50%,rgba(255,241,199,0) 100%);
+  transform:skewX(-18deg);
+  pointer-events:none;
+  z-index:1;
+  animation:mnrSheen3d 3.8s cubic-bezier(.4,0,.2,1) infinite;
+}
+.mnr-shine3d:hover{
+  transform:translateY(-2px);
+  animation-play-state:paused;
+}
+@keyframes mnrSheen3d{
+  0%{ left:-140%; }
+  45%{ left:150%; }
+  100%{ left:150%; }
+}
+@keyframes mnrGlow3d{
+  0%,100%{
+    box-shadow:0 8px 26px -16px rgba(199,161,78,.55);
+    border-color:rgba(230,204,140,.5);
+  }
+  50%{
+    box-shadow:0 0 20px rgba(199,161,78,.42), 0 10px 30px -12px rgba(199,161,78,.75);
+    border-color:rgba(230,204,140,.95);
+  }
+}
+@media (prefers-reduced-motion: reduce){
+  .mnr-shine3d, .mnr-shine3d::after{ animation:none; }
+}
+
+
+/* ---- Hero scroll cue: lit in gold with a slow breathing glow and a gently
+   falling arrow, so the invitation to scroll reads as light rather than label. ---- */
+.mnr-scrollcue{
+  color:#E6CC8C !important;
+  text-shadow:0 0 14px rgba(230,204,140,.35);
+  animation:mnrCueGlow 3s ease-in-out infinite;
+}
+.mnr-scrollcue span{
+  display:inline-block;
+  animation:mnrCueDrop 1.9s ease-in-out infinite;
+}
+@keyframes mnrCueGlow{
+  0%,100%{ opacity:.7;  text-shadow:0 0 10px rgba(230,204,140,.25); }
+  50%    { opacity:1;   text-shadow:0 0 22px rgba(230,204,140,.6); }
+}
+@keyframes mnrCueDrop{
+  0%,100%{ transform:translateY(0); }
+  50%    { transform:translateY(5px); }
+}
+@media (prefers-reduced-motion: reduce){
+  .mnr-scrollcue, .mnr-scrollcue span{ animation:none; }
+}
+
+
+/* ---- Hero 3D backdrop: dissolve, do not stop. ----
+   The hero sits over the site-wide lighthouse canvas, which stays visible below
+   the fold. Ending the 3D layer on an opaque colour produced a hard horizontal
+   band where it met that lighter scene. Masking the layer to transparent instead
+   lets the lighthouse bleed through, so the hero melts into the next section. */
+.mnr-3d-hero{
+  -webkit-mask-image:linear-gradient(to bottom,
+    #000 0%, #000 34%, rgba(0,0,0,.94) 52%, rgba(0,0,0,.78) 66%,
+    rgba(0,0,0,.55) 77%, rgba(0,0,0,.32) 87%, rgba(0,0,0,.13) 95%, rgba(0,0,0,0) 100%);
+          mask-image:linear-gradient(to bottom,
+    #000 0%, #000 34%, rgba(0,0,0,.94) 52%, rgba(0,0,0,.78) 66%,
+    rgba(0,0,0,.55) 77%, rgba(0,0,0,.32) 87%, rgba(0,0,0,.13) 95%, rgba(0,0,0,0) 100%);
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  -webkit-mask-size:100% 100%;   mask-size:100% 100%;
+}

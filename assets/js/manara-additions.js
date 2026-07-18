@@ -168,6 +168,52 @@
   // On phones, the full-screen (min-height:100vh) content sections leave huge empty
   // gaps (the lighthouse background showing through). Shrink them to content height on
   // narrow screens. Desktop keeps the intended full-screen look.
+  // The hero already ships its own cue — "Scroll into the light" — which fits the
+  // lighthouse motif better than anything we'd add. Rather than introduce a second
+  // one, we just light this one: the .mnr-scrollcue class gives it the gold glow.
+  function litScrollCue() {
+    var spans = document.getElementsByTagName('span');
+    for (var i = 0; i < spans.length; i++) {
+      var s = spans[i];
+      if (s.classList.contains('mnr-scrollcue')) return;   // already lit
+      if (/^\s*Scroll into the light\s*$/i.test(s.textContent || '')) {
+        s.classList.add('mnr-scrollcue');
+        return;
+      }
+    }
+  }
+
+  // Belt-and-braces: the bundle still ships the old "Our HRM Department" modal.
+  // HR now lives on its own page, so that card should never surface again — even if
+  // some stale trigger or an old cached script tries to open it. We keep it forced
+  // shut on every tick, so it cannot flash on load or reappear on a re-render.
+  function hideLegacyHRModal() {
+    var el = window.__mnrHRModal;
+    if (!el || !el.isConnected) {
+      el = null;
+      var divs = document.getElementsByTagName('div');
+      for (var i = 0; i < divs.length; i++) {
+        var d = divs[i];
+        if (d.children.length > 6) continue;
+        if (!/Our HRM Department/i.test(d.textContent || '')) continue;
+        if (getComputedStyle(d).position !== 'fixed') continue;
+        el = d; break;
+      }
+      window.__mnrHRModal = el;
+    }
+    if (el) el.style.setProperty('display', 'none', 'important');
+  }
+
+  // The 3D hero scene is a second WebGL context plus a Three.js download from a CDN.
+  // That is a lot to ask of a phone for something purely atmospheric, so on narrow
+  // screens we drop it and let the existing lighthouse background carry the hero.
+  function gate3dHero() {
+    var el = document.querySelector('.mnr-3d-hero');
+    if (!el) return;
+    if (window.innerWidth < 760) el.style.setProperty('display', 'none', 'important');
+    else el.style.removeProperty('display');
+  }
+
   function tightenSections() {
     if (window.innerWidth >= 760) return;   // phones/tablets only
     document.querySelectorAll('section, [data-dc-tpl]').forEach(function (s) {
@@ -183,6 +229,9 @@
     injectPublications();
     replaceCareersForm();
     tightenSections();
+    gate3dHero();
+    hideLegacyHRModal();
+    litScrollCue();
     removeCardPrices();
     // 1) HR trigger -> the real HR page (repoint the href; the click guard below blocks the modal)
     document.querySelectorAll('a[href="#hr-show"], [data-tk="hrc_b"]').forEach(function (el) {
