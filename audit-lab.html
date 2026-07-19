@@ -17,6 +17,7 @@
       This page requires JavaScript to display.
     </div>
   </noscript>
+
 </head>
 <body>
   <div id="__bundler_thumbnail">
@@ -439,6 +440,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     document.body.appendChild(bar);
   }
 
+  ensureMobileCss();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', mount);
   } else {
@@ -632,6 +634,18 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (btn) { btn.style.width = '100%'; btn.style.flex = '0 0 auto'; }
   }
 
+  /* The runtime clears <head> styles, so a static <style> tag silently vanished -
+     the mobile layout fixes never applied. Re-appended on the same interval that
+     re-asserts the toggle. */
+  var MOBILE_CSS = "\n/* Mobile layout repair for the report.\n   The report was built as a multi-column desktop grid: at 390px the panels sat\n   side by side, so the signal map and the score dial were cut off at both edges\n   and the URL headline ran past the screen. Inline styles carry the original\n   values, so these need !important to win. */\n@media (max-width: 760px) {\n\n  /* every multi-column panel row collapses to one column */\n  #root div[style*=\"grid-template-columns\"],\n  body div[style*=\"grid-template-columns\"] {\n    grid-template-columns: 1fr !important;\n  }\n\n  /* side-by-side flex rows wrap instead of overflowing */\n  body div[style*=\"display:flex\"][style*=\"gap\"] {\n    flex-wrap: wrap !important;\n  }\n\n  /* the scanned URL: was a huge single line that ran off-screen */\n  .orb, h1, h2 {\n    font-size: clamp(20px, 6.5vw, 34px) !important;\n    line-height: 1.15 !important;\n    overflow-wrap: anywhere !important;\n    word-break: break-word !important;\n    max-width: 100% !important;\n  }\n\n  /* panels must never exceed the viewport */\n  section, article, main > div, div[style*=\"border-radius\"] {\n    max-width: 100% !important;\n    box-sizing: border-box !important;\n  }\n\n  /* charts and dials scale down rather than clip */\n  svg { max-width: 100% !important; height: auto !important; }\n\n  /* the back bar was sitting on top of the Manara wordmark */\n  #mnr-audit-back {\n    position: static !important;\n    display: flex !important;\n    justify-content: flex-start !important;\n    padding: 10px 14px 0 !important;\n    transform: none !important;\n  }\n\n  /* wide legends and metric rows wrap */\n  body div[style*=\"justify-content:space-between\"] { flex-wrap: wrap !important; row-gap: 6px !important; }\n}\n\n  /* Digits must never break across lines. The wrap rules above squeezed the\n     score cells until \"56\" rendered as 5 above 6 and \"100\" as 10 above 0. */\n  [class*=\"score\"], [class*=\"num\"], .stat-num,\n  div[style*=\"font-size:38px\"], div[style*=\"font-size:34px\"],\n  span[style*=\"font-variant-numeric\"] {\n    white-space: nowrap !important;\n    word-break: keep-all !important;\n    overflow-wrap: normal !important;\n  }\n\n  /* the metric rows keep label / bar / score on one line */\n  body div[style*=\"justify-content:space-between\"] {\n    flex-wrap: nowrap !important;\n    align-items: center !important;\n    gap: 8px !important;\n  }\n";
+  function ensureMobileCss() {
+    if (document.getElementById('mnr-audit-mobile-css')) return;
+    var s = document.createElement('style');
+    s.id = 'mnr-audit-mobile-css';
+    s.textContent = MOBILE_CSS;
+    (document.head || document.documentElement).appendChild(s);
+  }
+
   function paintToggle() {
     var btns = document.querySelectorAll('[data-mnr-device]');
     for (var i = 0; i < btns.length; i++) {
@@ -701,7 +715,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   // Re-assert both the toggle and its painted state. The page rebuilds this
   // region, which can leave the buttons showing a stale selection even though
   // the delegated click handler updated the value correctly.
-  setInterval(function () { mount(); paintToggle(); fixMobileInput(); }, 1000);
+  setInterval(function () { mount(); paintToggle(); fixMobileInput(); ensureMobileCss(); }, 1000);
 })();
 </script>
 </body>
