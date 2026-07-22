@@ -188,22 +188,45 @@
   // Done in the overlay, not the bundle payload (the compiler blanks the page when its
   // sections are edited), so this can never break the homepage. Idempotent, re-run each tick.
   function relocateHomeSections() {
+    // FAQ -> its own page; hide the homepage section, add a footer link.
     var faq = document.querySelector('#faq') || document.querySelector('section[data-screen-label="FAQ"]');
     if (faq) faq.style.setProperty('display', 'none', 'important');
+
+    // Pain-points -> its own page; hide the block and drop a "Marketing Strategy"
+    // card in its place (linking to marketing.html), in the same card style. The
+    // card is inserted OUTSIDE the React section (as a sibling, after it), like the
+    // Solutions card, so a re-render can't wipe it.
     var cards = document.querySelectorAll('div[style*="border-radius:24px"],div[style*="border-radius: 24px"]');
+    var pain = null;
     for (var i = 0; i < cards.length; i++) {
-      if (/turning pain points/i.test(cards[i].textContent)) { cards[i].style.setProperty('display', 'none', 'important'); break; }
+      if (/turning pain points/i.test(cards[i].textContent)) { pain = cards[i]; break; }
     }
+    if (pain) {
+      pain.style.setProperty('display', 'none', 'important');
+      var sec = pain.closest ? pain.closest('section') : null;
+      var host = sec || pain.parentNode;
+      if (host && host.parentNode && !document.querySelector('.mnr-mktg-card')) {
+        var a = document.createElement('a');
+        a.className = 'mnr-mktg-card';
+        a.href = 'marketing.html';
+        a.style.cssText = 'display:block;text-decoration:none;max-width:1100px;margin:8px auto 24px;' +
+          'border:1px solid rgba(230,204,140,.24);border-radius:24px;padding:clamp(26px,4vw,44px);' +
+          'background:radial-gradient(120% 120% at 0% 0%,rgba(199,161,78,.1),transparent 55%),rgba(12,26,42,.55)';
+        a.innerHTML = '<div style="font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:#C7A14E;font-weight:600;margin-bottom:10px">Marketing Strategy</div>' +
+          '<div style="font-family:\'Cormorant Garamond\',serif;font-weight:600;font-size:clamp(26px,3.6vw,40px);color:#F4EEE1;margin:0 0 10px;line-height:1.05">Turning pain points into power points &rarr;</div>' +
+          '<div style="color:#CBBA98;font-size:16px;line-height:1.6;margin:0;max-width:660px">Every marketing frustration hides an advantage. See how we flip six of the most common ones &mdash; and the full method behind it.</div>';
+        host.parentNode.insertBefore(a, host.nextSibling);
+      }
+    }
+
     var footer = document.querySelector('footer');
     if (!footer || footer.querySelector('.mnr-foot-nav')) return;
     var nav = document.createElement('div');
     nav.className = 'mnr-foot-nav';
-    nav.style.cssText = 'text-align:center;padding:2px 24px 14px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap';
-    var s = 'color:#E6CC8C;text-decoration:none;' +
+    nav.style.cssText = 'text-align:center;padding:2px 24px 14px';
+    nav.innerHTML = '<a href="faq.html" style="color:#E6CC8C;text-decoration:none;' +
       "font:600 13.5px/1 'Archivo',sans-serif;letter-spacing:.02em;border:1px solid rgba(230,204,140,.4);" +
-      'border-radius:999px;padding:9px 20px;display:inline-block';
-    nav.innerHTML = '<a href="marketing.html" style="' + s + '">Marketing strategy →</a>' +
-                    '<a href="faq.html" style="' + s + '">Frequently asked questions →</a>';
+      'border-radius:999px;padding:9px 20px;display:inline-block">Frequently asked questions &rarr;</a>';
     var pubs = footer.querySelector('.mnr-pubs');
     if (pubs && pubs.parentNode) pubs.parentNode.insertBefore(nav, pubs.nextSibling);
     else footer.insertBefore(nav, footer.firstChild);
