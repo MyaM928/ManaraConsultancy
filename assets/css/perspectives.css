@@ -1,0 +1,132 @@
+/* Manara Consultancy — PERSPECTIVES
+   Light editorial article template, matching the printed Perspectives series.
+   Arial/Helvetica, white paper, red (#E60023) accents. */
+
+:root{
+  --ink:#1b1b1f;
+  --body:#33333a;
+  --grey:#6b7280;
+  --muted:#9aa0a6;
+  --line:#e6e6ea;
+  --red:#E60023;
+  --box:#f3f3f5;
+  --paper:#ffffff;
+  --navy:#0C1A2A;
+  --wrap:720px;
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body.perspectives{
+  margin:0;background:var(--paper);color:var(--body);
+  font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;
+  font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;
+}
+.pw{max-width:var(--wrap);margin:0 auto;padding:0 24px}
+
+/* ---- masthead ---- */
+.pmast{border-bottom:1px solid var(--line)}
+.pmast .pw{display:flex;align-items:center;justify-content:space-between;padding-top:20px;padding-bottom:16px}
+.pbrand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink)}
+.pbrand svg{width:34px;height:34px;flex:0 0 34px}
+.pbrand b{font-size:15px;font-weight:700;letter-spacing:.2px;display:block;line-height:1.15}
+.pbrand span{font-size:10.5px;letter-spacing:2.5px;color:var(--muted);font-weight:700}
+.pkicker{font-size:11px;letter-spacing:2px;color:var(--grey);font-weight:700;text-align:right}
+
+/* ---- article head ---- */
+.phead{text-align:center;padding:52px 0 8px}
+.peyebrow{color:var(--red);font-size:12px;letter-spacing:2.5px;font-weight:700;text-transform:uppercase;margin-bottom:22px}
+.phead h1{
+  font-size:clamp(30px,5.4vw,46px);line-height:1.12;color:var(--ink);
+  font-weight:800;letter-spacing:-.5px;margin:0 auto;max-width:14ch;
+}
+.pstand{color:var(--grey);font-size:clamp(17px,2.3vw,20px);line-height:1.5;margin:20px auto 0;max-width:34ch}
+.pby{display:inline-flex;align-items:center;gap:14px;margin:30px 0 8px;text-align:left}
+.pby svg{width:34px;height:34px;flex:0 0 34px}
+.pby .pn{font-size:13px;font-weight:700;color:var(--ink);line-height:1.25}
+.pby .pn span{display:block;font-weight:400;color:var(--muted);font-size:11.5px;letter-spacing:.2px}
+.pby .prule{width:1px;height:26px;background:var(--line)}
+.pby .pread{font-size:12px;font-weight:700;letter-spacing:1px;color:var(--grey)}
+
+/* ---- hero ---- */
+.phero{margin:26px 0 8px}
+.phero img{width:100%;height:auto;border-radius:12px;display:block}
+.pcap{font-size:13px;color:var(--muted);margin:11px 2px 0;line-height:1.5}
+
+/* ---- body ---- */
+.pbody{padding:8px 0 0}
+.pbody p{margin:20px 0;color:var(--body)}
+.pbody p.lead{margin-top:26px}
+.pbody p.lead::first-letter{
+  float:left;font-size:62px;line-height:.82;font-weight:800;color:var(--red);
+  padding:6px 12px 0 0;font-family:Arial,Helvetica,sans-serif;
+}
+.pbody h2{
+  display:flex;align-items:baseline;gap:14px;margin:46px 0 4px;
+  font-size:clamp(21px,3vw,26px);color:var(--ink);font-weight:800;letter-spacing:-.3px;line-height:1.2;
+}
+.pnum{color:var(--red);font-weight:800;font-size:1.15em;letter-spacing:-1px;flex:0 0 auto}
+.pbody h2.plain{display:block}
+.pbody ul{margin:16px 0;padding-left:0;list-style:none}
+.pbody ul li{position:relative;padding-left:22px;margin:9px 0}
+.pbody ul li::before{content:"";position:absolute;left:2px;top:11px;width:6px;height:6px;border-radius:50%;background:var(--red)}
+
+/* ---- pull quote ---- */
+.pquote{border-left:4px solid var(--red);padding:6px 0 6px 22px;margin:40px 0;
+  font-size:clamp(20px,3vw,25px);line-height:1.32;font-weight:700;color:var(--ink)}
+
+/* ---- call-out / data box ---- */
+.pcard{background:var(--box);border-radius:14px;padding:26px 26px 22px;margin:34px 0}
+.pcard .plabel{color:var(--red);font-size:11px;letter-spacing:2px;font-weight:700;text-transform:uppercase}
+.pcard h3{font-size:19px;font-weight:800;color:var(--ink);margin:5px 0 18px;letter-spacing:-.2px}
+.pcard .pcap{margin-top:16px}
+
+/* legend */
+.pleg{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:16px;font-size:12.5px;color:var(--grey);font-weight:600}
+.pleg span{display:inline-flex;align-items:center;gap:7px}
+.pleg i{width:11px;height:11px;border-radius:2px;display:inline-block}
+
+/* grouped bar chart */
+.pbars{display:flex;gap:4%;align-items:flex-end;height:170px;padding-top:6px}
+.pgroup{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px}
+.pgbars{display:flex;gap:6px;align-items:flex-end;height:150px}
+.pgbars i{width:15px;border-radius:3px 3px 0 0;display:block}
+.pglabel{font-size:12.5px;font-weight:700;color:var(--ink)}
+
+/* before/after comparison bars */
+.pcmp{margin:6px 0}
+.pcmp .prow{margin:12px 0}
+.pcmp .pt{font-size:12.5px;font-weight:700;color:var(--grey);margin-bottom:6px}
+.pcmp .ptrack{display:flex;align-items:center;gap:10px}
+.pcmp .pseg{height:34px;border-radius:6px;display:flex;align-items:center;padding:0 14px;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden}
+.pcmp .pg{background:#c9c9cf;color:#3a3a40}
+.pcmp .pr{background:var(--red);color:#fff}
+.pcmp .pmul{font-size:13px;font-weight:800;color:var(--ink)}
+
+/* ---- closing box ---- */
+.pclose{background:var(--box);border-radius:14px;padding:28px 30px;margin:44px 0 0}
+.pclose .plabel{color:var(--red);font-size:11px;letter-spacing:2px;font-weight:700;text-transform:uppercase}
+.pclose p{margin:14px 0 0}
+.pclose .pemph{color:var(--red);font-weight:700}
+
+/* ---- author bio ---- */
+.pbio{display:flex;gap:16px;align-items:flex-start;border-top:1px solid var(--line);margin-top:40px;padding:26px 0 10px}
+.pbio svg{width:44px;height:44px;flex:0 0 44px}
+.pbio p{margin:0;font-size:14px;color:var(--grey);line-height:1.6}
+.pbio a{color:var(--red);text-decoration:none;font-weight:700}
+
+/* ---- footer nav ---- */
+.pfoot{border-top:1px solid var(--line);margin-top:40px}
+.pfoot .pw{display:flex;justify-content:space-between;align-items:center;padding:22px 24px;flex-wrap:wrap;gap:12px}
+.pfoot a{color:var(--ink);text-decoration:none;font-weight:700;font-size:14px}
+.pfoot a:hover{color:var(--red)}
+.pfoot .pcta{background:var(--red);color:#fff;padding:11px 22px;border-radius:999px}
+.pfoot .pcta:hover{color:#fff;opacity:.9}
+
+@media(max-width:560px){
+  body.perspectives{font-size:16px}
+  .phead{padding-top:38px}
+  .pby{gap:11px}
+  .pgbars i{width:11px}
+  .pbars{height:150px}
+}
